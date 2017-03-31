@@ -26,7 +26,7 @@ for (Group in Groups){
 
   #Calculate the average width and write output
   AWDframe<-do.call(rbind,lapply(gages,avWidth,grpTS,Group,Q1,Q2,Level)) #singlebound<-avWidth("01073000",grpTS,Group,Q1,Q2)
-  write.csv(AWDframe,paste("CW/",Group,"_",Level,sep=""),quote=F,row.names=F)
+  write.csv(AWDframe,paste("AW/",Group,"_",Level,sep=""),quote=F,row.names=F)
   
   AWIMedian<-AWDframe %>% group_by(MONTH) %>% summarise (AWI=median(AWI))
   CRMedian<-AWDframe %>% group_by(MONTH) %>% summarise (CR=median(CR))
@@ -36,7 +36,7 @@ for (Group in Groups){
   Median<-MnMonthlyZ %>% group_by(Month) %>% summarise (median=median(OBSz))
   Median$AWI<-AWIMedian$AWI
   Median$CR<-CRMedian$CR
-  write.csv(Median,paste("CW/",Group,"_Median_",Level,sep=""),quote=F)
+  write.csv(Median,paste("AW/",Group,"_Median_",Level,sep=""),quote=F)
   
   png(paste("CW/",Group,"_",Level,".png",sep=""),w=500,h=500)
   p<-ggplot(AWDframe, aes(x=factor(AWDframe$MONTH), y=AWI)) + geom_boxplot() + labs(x="Month",y="AWI")
