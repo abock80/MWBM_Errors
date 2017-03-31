@@ -1,7 +1,7 @@
-hruBoundAssign<-function(Grp){
+hruBoundGage<-function(Grp,Lev){
   print(Grp)
   # Get bounds by CalRegion
-  gageBounds1<-read.csv(paste("Bounds/Q90/",Grp,sep=""),colClasses=c(rep("numeric",5),"character"))
+  gageBounds1<-read.csv(paste("Bounds/",Lev,"/",Grp,sep=""),colClasses=c(rep("numeric",5),"character"))
   # Get list of unique gages
   gages<-unique(gageBounds1$GAGE)
   
@@ -43,7 +43,7 @@ hruBoundAssign<-function(Grp){
     ID_dFrame[Pos,"NovHigh"]<<-gageBnd[11,4]
     ID_dFrame[Pos,"DecHigh"]<<-gageBnd[12,4]
   }
-  return(ID_dFrame)
+  #return(ID_dFrame)
 }
 
 

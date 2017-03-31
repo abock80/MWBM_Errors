@@ -1,13 +1,18 @@
 setwd("d:/abock/Water_Balance/MWBM_errors")
-source("Code/HruBound_Assignment.R")
+source("MWBM_Errors/HruBound_Gages.R")
+source("MWBM_Errors/HruBound_CalReg.R")
 
-Level<-"Q90"
+Level<-"Q99"
 
 #NatID.csv
 NatIDs<-read.csv("HruBounds/NatID.csv")
 
 #hruBounds
-hruBounds<-read.csv(paste("HruBounds/hruBounds_",Level,".csv",sep=""))
+hruBounds<-read.csv(paste("HruBounds/regBounds_",Level,".csv",sep=""))
+calReg<-unlist(strsplit(as.character(hruBounds$CalReg),"_"))
+
+hruBounds$Calibration_region<-as.numeric(calReg[seq(2,length(calReg),2)])
+CalReg<-unique(as.numeric(calReg[seq(2,length(calReg),2)]))
 
 #GageBounds/Q90
 gageBounds<-list.files(paste("Bounds/",Level,sep=""))
@@ -30,57 +35,14 @@ colnames(emptydFrame)<-c("JanLow","FebLow","MarLow","AprLow","MayLow","JunLow","
 # Use global assignment to allow assignment in function
 ID_dFrame<<-cbind(ID_dFrame,emptydFrame)
 
-
-  
-# works for one
-lapply(Bounds,hruBoundAssign)
-  
-# Does it work for the group
-lapply(gageBounds,hruBoundAssign)
+# 1 - Assign Uncertainty Bounds for HRUs within catchments with calibration gages.
+#lapply(Bounds,hruBoundAssign)
+lapply(gageBounds,hruBoundGage,Level)
  
-  
-  
-# By Group
-for (Bounds in gageBounds){   
-  # Get bounds by CalRegion
-  gageBounds1<-read.csv("Bounds/Q90/finalGRP_1_Q90",colClasses=c(rep("numeric",5),"character"))
-  # Get list of unique gages
-  gages<-unique(gageBounds1$GAGE)
-}
+# Start Function Here 
+#Reg<-CalReg[1]
+#hruBoundReg(Reg,hruBNDs)
+lapply(CalReg,hruBoundReg,hruBNDs)
 
-# For a single gage
-# Find rows with gages
-Pos<-which(ID_dFrame$Gages %in% gages,arr.ind=TRUE)
-gageBnd<-gageBounds1[which(gageBounds1$GAGE==gages[1]),]
+write.csv(ID_dFrame,paste("HruBounds/HruBounds_",Level,".csv",sep=""),quote=F,row.names=F)
 
-# Calculate LowBounds for HRUs with Gage
-ID_dFrame[Pos,"JanLow"]<-gageBnd[1,2]
-ID_dFrame[Pos,"FebLow"]<-gageBnd[2,2]
-ID_dFrame[Pos,"MarLow"]<-gageBnd[3,2]
-ID_dFrame[Pos,"AprLow"]<-gageBnd[4,2]
-ID_dFrame[Pos,"MayLow"]<-gageBnd[5,2]
-ID_dFrame[Pos,"JunLow"]<-gageBnd[6,2]
-ID_dFrame[Pos,"JulLow"]<-gageBnd[7,2]
-ID_dFrame[Pos,"AugLow"]<-gageBnd[8,2]
-ID_dFrame[Pos,"SepLow"]<-gageBnd[9,2]
-ID_dFrame[Pos,"OctLow"]<-gageBnd[10,2]
-ID_dFrame[Pos,"NovLow"]<-gageBnd[11,2]
-ID_dFrame[Pos,"DecLow"]<-gageBnd[12,2]
-
-# Calculate LowBounds for HRUs with Gage
-ID_dFrame[Pos,"JanHigh"]<-gageBnd[1,4]
-ID_dFrame[Pos,"FebHigh"]<-gageBnd[2,4]
-ID_dFrame[Pos,"MarHigh"]<-gageBnd[3,4]
-ID_dFrame[Pos,"AprHigh"]<-gageBnd[4,4]
-ID_dFrame[Pos,"MayHigh"]<-gageBnd[5,4]
-ID_dFrame[Pos,"JunHigh"]<-gageBnd[6,4]
-ID_dFrame[Pos,"JulHigh"]<-gageBnd[7,4]
-ID_dFrame[Pos,"AugHigh"]<-gageBnd[8,4]
-ID_dFrame[Pos,"SepHigh"]<-gageBnd[9,4]
-ID_dFrame[Pos,"OctHigh"]<-gageBnd[10,4]
-ID_dFrame[Pos,"NovHigh"]<-gageBnd[11,4]
-ID_dFrame[Pos,"DecHigh"]<-gageBnd[12,4]
-
-
-
-  
